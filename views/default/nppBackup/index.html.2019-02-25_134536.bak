@@ -1,0 +1,39 @@
+{{extend 'layout.html'}}
+
+{{block header}}
+
+{{end}}
+
+<div>
+	{{if auth.user:}}
+		<div class="upload_container">
+			<form action="#" enctype="multipart/form-data" method="post">
+				<h1> Upload New WordSource: </h1>
+				<h4> Name: <input name="name" value="Name this WordSource!" /> </h4>
+				<div style="background-color:palegoldenrod ; padding:5px; border: 2px solid black;">
+					<h3><u>Choose Text Source:</u></h3>
+					<h4> File: <input name="origin" type="file" /> </h4>
+					<h4> Type:
+					<select name="filetype">
+						<option value="txt"> Text File (.txt, .pdf) </option>
+						<option value="url"> Website URL </option>
+					</select>
+					</h4>
+					<input type="submit" />
+				</div>
+				<input type="hidden" name="_formname" value="wordsource_upload" />
+			</form>
+		</div>
+			
+		<!-- <div id="text_source">
+			<h3>Choose Text Source:</h3>
+			<div id="upload_area">
+			Upload a text file: <input type="file"><br>
+			<strong>OR</strong> <br>
+			Enter URL: <input type="text"><br>
+			</div>
+		</div> -->
+	{{else:}}
+		<h1> Please log in to continue! <h1>
+	{{pass}}
+</div>

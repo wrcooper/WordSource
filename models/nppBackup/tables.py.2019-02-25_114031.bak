@@ -1,0 +1,4 @@
+db.define_table("word_source",
+	Field("user"),
+	Field("file", "upload")
+)

@@ -1,0 +1,83 @@
+var app = function() {
+	self.vue = {};
+	
+  Vue.config.silent = false; // show all warnings
+	
+	self.get_user = function(){
+		console.log("getting user")
+		$.getJSON(get_user_url,
+			function(data){
+				console.log(data);
+				self.vue.user_id = data.user_id;
+				if (self.vue.user_id != -1){
+					self.get_wordsources(self.vue.user_id);
+				}
+			}
+		);
+	}
+	
+	self.get_wordsources = function(user_id){
+		console.log("getting wordsources...");
+		
+		$.post(get_wordsources_url,
+			{
+				user_id: user_id
+			},
+			function(data){
+				self.vue.wordsources = data.wordsources;
+				console.log(data.wordsources);
+			}
+		);
+	}
+	
+	self.delete_wordsource = function(wordsource_id, wordsource_name){
+		if (confirm("Really delete " + wordsource_name + "?")){
+			$.post(delete_wordsource_url,
+				{wordsource_id: wordsource_id},
+				function(data){
+					console.log("Wordsource " + wordsource_name + " deleted!")
+				}
+			)
+		} else {
+			return;
+		}
+	}
+	
+	self.select_wordsource = function(wordsource_id){
+		$.post(select_wordsource_url,
+			{
+				wordsource_id: wordsource_id
+			},
+			function(data){
+				return;
+			}
+		)
+	}
+	
+	self.vue = new Vue({
+		el: "#available_wordsources",
+		delimiters: ['${', '}'],
+		unsafeDelimiters: ['!{', '}'],
+		data: {
+			user_id: -1,
+			message: "Hello Vue!",
+			wordsources: []
+		},
+		methods: {
+			get_user: self.get_user,
+			get_wordsources: self.get_wordsources,
+			delete_wordsource: self.delete_wordsource
+		}
+	});
+	
+	self.get_user();
+	
+	
+	return self;
+}
+
+var APP = null;
+
+// This will make everything accessible from the js console;
+// for instance, self.x above would be accessible as APP.x
+jQuery(function(){APP = app();});

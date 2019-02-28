@@ -1,0 +1,12 @@
+{{extend 'layout.html'}}
+
+{{block header}}
+
+{{end}}
+
+<div>
+	<div id="text_source">
+		Upload a text file: <input type="file"><br>
+		Enter URL: <input type="text"><br>
+	</div>
+</div>

@@ -1,0 +1,9 @@
+.upload_header{
+	border: 2px solid black;
+	border-bottom:none;
+	border-radius:2px;
+	padding:10px;
+}
+
+.upload_container{
+}

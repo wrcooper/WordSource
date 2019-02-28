@@ -1,0 +1,4 @@
+#upload_area{
+	background-color:lightgray;
+	padding:5px;
+}

@@ -1,0 +1,16 @@
+var available_ws_app = function() {
+	self.vue = {}
+	self.vue = new Vue({
+		el: "#available_wordsources",
+		data: {
+			message: "Hello Vue!"
+		}
+	});
+	return self;
+}
+
+var APP = null;
+
+// This will make everything accessible from the js console;
+// for instance, self.x above would be accessible as APP.x
+jQuery(function(){APP = available_ws_app();});

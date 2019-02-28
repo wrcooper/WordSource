@@ -1,0 +1,32 @@
+{{extend 'layout.html'}}
+
+{{block header}}
+<script>
+	var select_wordsource_url = "{{=URL('api', 'select_wordsource')}}";
+	var get_wordsources_url = "{{=URL('api', 'get_wordsources')}}";
+	var delete_wordsource_url = "{{=URL('api', 'delete_wordsource')}}";
+	var get_user_url = "{{=URL('api', 'get_user')}}";
+</script>
+{{end}}
+
+<div>
+	{{if auth.user:}}
+	
+		<div v-if="wordsources != []">
+			No WordSources! Upload one to see it here.
+		</div>
+		
+		<div id="available_wordsources">
+			<a v-cloak v-for="wordsource in wordsources">
+				<div class="wordsource_selector" v-on:click="select_wordsource(wordsource.id)">
+					<button onClick="window.location.reload()" style="float:right;" v-on:click="delete_wordsource(wordsource.id, wordsource.name)"> <i class="fas fa-times"></i> </button>
+					<h3> ${wordsource.name} </h3>
+					${wordsource.filetype}
+				</div>
+			</a>
+		</div>
+		
+	{{else:}}
+		<h1> Please log in to continue! <h1>
+	{{pass}}
+</div>

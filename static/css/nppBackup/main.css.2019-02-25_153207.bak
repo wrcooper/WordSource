@@ -1,0 +1,9 @@
+.upload_container{
+	border: 2px solid black;
+	border-radius:2px;
+	padding:20px; 
+}
+
+.wordsource_selector{
+	border: 2px solid black;
+}

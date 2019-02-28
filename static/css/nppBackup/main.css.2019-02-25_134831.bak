@@ -1,0 +1,9 @@
+#upload_area{
+	background-color:lightgray;
+	padding:5px;
+	border: 2px solid black;
+	width: 95%;
+	margin:15px 0;
+	margin-right:5%;
+}
+

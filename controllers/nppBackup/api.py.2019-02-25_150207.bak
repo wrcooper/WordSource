@@ -1,0 +1,17 @@
+def get_user():
+	db.select(db.wordsource).delete()
+  if auth is not None:
+    return response.json(
+      dict(user_id = auth.user_id)
+    )
+  else:
+    return response.json(
+      dict(user_id = -1)
+    )
+
+def get_wordsources():
+  #wordsources = db(db.wordsources.source_owner == request.vars.user_id).select()
+  wordsources = db.select(db.wordsources)
+  return response.json(
+    dict(wordsources = wordsources)
+  )

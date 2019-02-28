@@ -1,0 +1,3 @@
+def get_wordsources():
+	wordsources = db.wordsources.select(source_owner = request.vars.user_id)
+	return dict(wordsources = wordsources)

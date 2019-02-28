@@ -1,0 +1,43 @@
+{{extend 'layout.html'}}
+
+{{block header}}
+<script>
+	var select_wordsource_url = "{{=URL('api', 'select_wordsource')}}";
+	var get_wordsources_url = "{{=URL('api', 'get_wordsources')}}";
+	var delete_wordsource_url = "{{=URL('api', 'delete_wordsource')}}";
+	var get_user_url = "{{=URL('api', 'get_user')}}";
+</script>
+{{end}}
+
+<div>
+	{{if auth.user:}}
+	
+		<div id="navbar">
+			<a href="{{=URL('default', index')}}"><button class="navbar_btn">Upload WordSource</button></a>
+			<a><button class="navbar_btn">My WordSources</button></a>
+		</div>
+		
+		<div class="upload_container">
+			<form action="{{=URL('default', 'wordsources')}}" enctype="multipart/form-data" method="post">
+				<h1> <u> Upload New WordSource: </u> </h1>
+				<h4> Name: <input name="name" value="" placeholder="Name this WordSource!" /> </h4>
+				<div style="background-color:#F5B041; padding:5px; border: 2px solid black;">
+					<h3><u>Choose Text Source:</u></h3>
+					<h4> File: <input name="origin" type="file" /> </h4>
+					<h4> Type:
+					<select name="filetype">
+						<option value="txt"> Text File (.txt, .pdf) </option>
+						<option value="url"> Website URL </option>
+					</select>
+					</h4>
+					<input type="submit" />
+				</div>
+				<input type="hidden" name="source_owner" value="{{=auth.user_id}}"/>
+				<input type="hidden" name="_formname" value="wordsource_upload" />
+			</form>
+		</div>
+		
+	{{else:}}
+		<h1> Please log in to continue! <h1>
+	{{pass}}
+</div>

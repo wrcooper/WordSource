@@ -1,0 +1,45 @@
+{{extend 'layout.html'}}
+
+{{block header}}
+<script>
+	var select_wordsource_url = "{{=URL('api', 'select_wordsource')}}";
+	var get_wordsources_url = "{{=URL('api', 'get_wordsources')}}";
+	var delete_wordsource_url = "{{=URL('api', 'delete_wordsource')}}";
+	var get_user_url = "{{=URL('api', 'get_user')}}";
+</script>
+{{end}}
+
+<div>
+	{{if auth.user:}}
+		
+		<div id="available_wordsources" v-if="selected == -1">
+	
+			<div id="navbar">
+				<a href="{{=URL('default', 'index')}}"><button class="navbar_btn">Upload WordSource</button></a>
+				<a href="{{=URL('default', 'wordsources')}}"><button class="navbar_btn">My WordSources</button></a>
+			</div>
+		
+			<div v-if="wordsources.length == 0">
+				No WordSources! Upload one to see it here.
+			</div>
+		
+			<a v-cloak v-for="wordsource in wordsources">
+				<div class="wordsource_selector" v-on:click="select_wordsource(wordsource.id)">
+					<button onClick="window.location.reload()" style="float:right;" v-on:click="delete_wordsource(wordsource.id, wordsource.name)"> <i class="fas fa-times"></i> </button>
+					<h3> ${wordsource.name} </h3>
+					${wordsource.filetype}
+				</div>
+			</a>
+		</div>
+		
+		<div id="selected_wordsource">
+			<div v-cloak class="selected_wordsource" v-if="selected != -1">
+				<h1>${wordsource_name} <button style="float:right; margin:5px;"> Back to WordSources </button></h1>
+				<button> Concordance </button>
+			</div>
+		</div>
+		
+	{{else:}}
+		<h1> Please log in to continue! <h1>
+	{{pass}}
+</div>

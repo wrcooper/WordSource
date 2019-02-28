@@ -1,0 +1,4 @@
+db.define_table('wordsource',
+	Field('Name', requires=IS_NOT_EMPTY()),
+	Field('origin', 'upload')
+)

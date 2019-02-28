@@ -1,0 +1,6 @@
+.upload_container{
+	border: 2px solid black;
+	border-radius:2px;
+	padding:0px; 
+	padding-bottom: 0px;
+}

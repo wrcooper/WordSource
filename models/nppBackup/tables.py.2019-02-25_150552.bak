@@ -1,0 +1,6 @@
+db.define_table('wordsources',
+	Field('name', requires=IS_NOT_EMPTY()),
+	Field('origin', 'upload'),
+	Field('filetype', 'text'),
+	Field('source_owner', db.auth_user)
+)

@@ -1,0 +1,26 @@
+var app = function() {
+	self.vue = {};
+	
+  Vue.config.silent = false; // show all warnings
+	
+	self.get_wordsources = function(){
+		
+	}
+	
+	self.vue = new Vue({
+		el: "#available_wordsources",
+		delimiters: ['${', '}'],
+		unsafeDelimiters: ['!{', '}'],
+		data: {
+			message: "Hello Vue!"
+		}
+	});
+	
+	return self;
+}
+
+var APP = null;
+
+// This will make everything accessible from the js console;
+// for instance, self.x above would be accessible as APP.x
+jQuery(function(){APP = app();});

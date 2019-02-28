@@ -1,0 +1,7 @@
+var available_ws_app = new Vue({
+	el: "#available_wordsources",
+	data: {
+		message: "Hello Vue!"
+	}
+})
+

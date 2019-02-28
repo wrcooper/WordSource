@@ -1,0 +1,3 @@
+db.define_table("word_source",
+	Field("source", "upload")
+)

@@ -1,0 +1,9 @@
+def get_user():
+	if auth:
+	  return dict(user_id = auth.user_id)
+	else:
+		return dict(user_id = -1)
+
+def get_wordsources():
+	wordsources = db.wordsources.select(source_owner = request.vars.user_id)
+	return dict(wordsources = wordsources)

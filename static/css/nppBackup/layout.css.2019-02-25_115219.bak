@@ -1,0 +1,14 @@
+html{
+	height: 100%;
+}
+
+body{
+	height:100%;
+}
+
+#header{
+	background-color:black;
+	padding:15px;
+	padding-bottom:5px;
+	font-family: "Fjalla One", sans-serif;
+}
