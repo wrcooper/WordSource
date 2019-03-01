@@ -1,4 +1,4 @@
-timestamp: 2019-02-09T14:48:14.932000
+timestamp: 2019-02-27T19:48:51.074000
 CREATE TABLE "auth_user"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "first_name" CHAR(128),
@@ -10,21 +10,21 @@ CREATE TABLE "auth_user"(
     "registration_id" CHAR(512)
 );
 success!
-timestamp: 2019-02-09T14:48:15.013000
+timestamp: 2019-02-27T19:48:51.088000
 CREATE TABLE "auth_group"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "role" CHAR(512),
     "description" TEXT
 );
 success!
-timestamp: 2019-02-09T14:48:15.075000
+timestamp: 2019-02-27T19:48:51.100000
 CREATE TABLE "auth_membership"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
     "group_id" INTEGER REFERENCES "auth_group" ("id") ON DELETE CASCADE  
 );
 success!
-timestamp: 2019-02-09T14:48:15.134000
+timestamp: 2019-02-27T19:48:51.110000
 CREATE TABLE "auth_permission"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "group_id" INTEGER REFERENCES "auth_group" ("id") ON DELETE CASCADE  ,
@@ -33,7 +33,7 @@ CREATE TABLE "auth_permission"(
     "record_id" INTEGER
 );
 success!
-timestamp: 2019-02-09T14:48:15.200000
+timestamp: 2019-02-27T19:48:51.122000
 CREATE TABLE "auth_event"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "time_stamp" TIMESTAMP,
@@ -43,7 +43,7 @@ CREATE TABLE "auth_event"(
     "description" TEXT
 );
 success!
-timestamp: 2019-02-09T14:48:15.299000
+timestamp: 2019-02-27T19:48:51.134000
 CREATE TABLE "auth_cas"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
@@ -53,28 +53,12 @@ CREATE TABLE "auth_cas"(
     "renew" CHAR(1)
 );
 success!
-timestamp: 2019-02-25T12:33:27.752000
-CREATE TABLE "wordsource"(
-    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "Name" CHAR(512),
-    "origin" CHAR(512)
-);
-success!
-timestamp: 2019-02-25T12:46:42.464000
-ALTER TABLE "wordsource" ADD "filetype" TEXT;
-success!
-timestamp: 2019-02-25T13:40:48.881000
-ALTER TABLE "wordsource" ADD "source_owner" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ;
-success!
-timestamp: 2019-02-25T15:01:40.634000
+timestamp: 2019-02-27T19:48:51.147000
 CREATE TABLE "wordsources"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "name" CHAR(512),
     "origin" CHAR(512),
     "filetype" TEXT,
-    "source_owner" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  
+    "source_owner" TEXT
 );
-success!
-success!
-success!
 success!

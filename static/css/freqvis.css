@@ -1,0 +1,14 @@
+.grid path {
+  stroke-width: 0;
+}
+
+.grid .tick line {
+  stroke: #9FAAAE;
+  stroke-opacity: 0.3;
+}
+
+text {
+	font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+  fill: #fff;
+}

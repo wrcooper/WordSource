@@ -54,7 +54,7 @@ def user():
     to decorate functions that need access control
     also notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users
     """
-    return dict(form=auth())
+    return dict(form=auth(), message=T(''))
 
 # ---- action to server uploaded static content (required) ---
 @cache.action()
