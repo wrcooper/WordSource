@@ -3,6 +3,7 @@
 	border-radius:2px;
 	padding:20px;
 	margin-bottom: 20px;
+  color:black;
 }
 
 .wordsource_selector{
@@ -49,11 +50,17 @@
 	width:22.5%;
 }
 
-.freqvis_container{
+.vis_container{
   overflow:auto;
   margin-top: 20px;
 	padding:20px;
   background-color: #2F4A6D;
+}
+
+.svg_container{
+  width: 100%;
+  height:100%;
+  text-align:center;
 }
 
 .freq_btn_container{
@@ -70,6 +77,9 @@ svg{
 	height: 600px;
 }
 
+.conc_btn_container{
+  margin-bottom: 20px;
+}
 
 .to_display_input{
   height: 30px;

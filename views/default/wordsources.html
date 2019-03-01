@@ -48,17 +48,22 @@
 					<button class="vis_button" v-on:click="select_vis('tree')"> Word Tree </button> 
 					<button class="vis_button" v-on:click="select_vis('gen')"> Generated Text </button> 
 				</div> 
-				<div class="freqvis_container">
+				<div class="vis_container">
           <div v-if="vis_type == 'freq'" class="freq_btn_container">
             # to display: <input class="to_display_input" v-model="to_display" @change="draw_freqdist" type="number" min="1" max="100" step="1">
             <button class="vis_attr_btn" v-on:click="set_visattr('token')"> Token Frequency </button>
             <button class="vis_attr_btn" v-on:click="set_visattr('len')"> Token Length Frequency </button>
           </div>
+          
           <div v-if="vis_type == 'conc'" class="conc_btn_container">
+            <div style="float:right; font-size:30px;">Matches found: <div style="display:inline">${matches_found}</div> </div>
             Type in a word and press enter: <input type="text" v-model="query" @keyup.enter="get_concordance()">
-            <div>Displaying first <input class="to_display_input" v-model="to_display_conc" type="number" min="1" max="20" step="1"></div>
+            <div>Displaying first <input class="to_display_input" v-model="to_display_conc" @change="get_concordance()" type="number" min="1" max="20" step="1"></div>
           </div>
-          <svg />
+          
+          <div class="svg_container">     
+            <svg />
+          </div>
 				</div>
 			</div>
 		</div>

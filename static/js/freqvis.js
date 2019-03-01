@@ -1,5 +1,9 @@
 function removeSVG(){
   d3.selectAll("svg > *").remove();
+  d3.select('svg')
+    .style('background-color', '#2F4A6D')
+    .style("width", '2000')
+    .style('height', '600');
 }
 
 function drawTokVis(freq_dist, max, filename){
@@ -101,7 +105,6 @@ function drawLenVis(freq_dist, max, filename){
   chart.append('g')
     .call(d3.axisLeft(yScale));
     
-   
   const xScale = d3.scaleBand()
     .range([0, width])
     .domain(freq_dist.map((s) => s.len))

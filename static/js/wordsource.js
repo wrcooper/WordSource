@@ -75,6 +75,8 @@ var app = function() {
 				self.selected.selected = wordsource.id;
 				self.process_wordsource(wordsource.id);
 				
+        self.selected.concordance = [];
+        self.update_matches();
 				return;
 			}
 		)
@@ -99,7 +101,7 @@ var app = function() {
         
         self.selected.freq_array = formFreqArray(self.selected.freq_dist, self.selected.outcomes);
         self.selected.len_array = formLenArray(self.selected.len_dist, self.selected.outcomes);
-        self.draw_freqdist();
+        self.draw_vis();
 				return;
 			}
 		)
@@ -127,7 +129,7 @@ var app = function() {
   }
   
   self.draw_concordance = function(){
-    drawConcordance();
+    drawConcordance(self.selected.concordance, self.selected.to_display_conc);
   } 
   
   self.get_concordance = function(){
@@ -141,6 +143,8 @@ var app = function() {
         console.log(self.selected.query);
         console.log(data.concordance);
         self.selected.concordance = data.concordance;
+        self.update_matches();
+        self.draw_concordance()
       })
   }
   
@@ -214,14 +218,24 @@ var app = function() {
 	});
   
   self.select_vis = function(type){
+    self.selected.concordance = [];
+    self.update_matches();
     self.selected.vis_type = type;
-    if (type == 'freq'){
+    self.draw_vis()
+  }
+  
+  self.draw_vis = function(){
+    if (self.selected.vis_type == 'freq'){
       self.draw_freqdist();
-    }else if (type == 'gen'){
+    }else if (self.selected.vis_type == 'gen'){
       self.draw_generated();
-    }else if (type == 'conc'){
+    }else if (self.selected.vis_type == 'conc'){
       self.draw_concordance();
     }
+  }
+  
+  self.update_matches = function(){
+    self.selected.matches_found = self.selected.concordance.length;
   }
   
   self.set_visattr = function(attr){
@@ -248,14 +262,15 @@ var app = function() {
       filename: '',
       query: '',
       concordance: [],
-      to_display_conc: 10
+      to_display_conc: 10,
+      matches_found: 0
 		},
 		methods:{
 			process_wordsource: self.process_wordsource,
       select_vis: self.select_vis,
       set_visattr: self.set_visattr,
       draw_freqdist: self.draw_freqdist,
-      get_concordance: self.get_concordance
+      get_concordance: self.get_concordance,
 		}
 		
 	});
