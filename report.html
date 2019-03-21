@@ -1,0 +1,81 @@
+<!doctype html>
+  <head>
+  </head>
+  <body style="min-width: 1800px;">
+    <div style="text-align: center">
+      <h1> WordSource: A Word and Sentence Structure Visualization </h1>
+      <h3> By Winston Cooper </h3>
+      <h3> CMPS 161 - Winter 2019 </h3>
+    </div>
+    <div>
+      <h2><a href="./static/CMPS 161 Final Paper.pdf">Technical Paper</a></h2>
+    </div>
+    <div style="border: 2px solid black; padding: 5px;">
+      <h2>Source Code:</h2>
+      <h3><a href="./controllers/api.py">api.py</a></h3>
+      <h3><a href="./controllers/default.py">default.py</a></h3>
+      <h3><a href="./static/js/wordsource.js">wordsource.js</a></h3>
+      <h3><a href="./static/js/freqvis.js">freqvis.js</a></h3>
+      <h3><a href="./static/js/concordance.js">concordance.js</a></h3>
+      <h3><a href="./static/js/wordTree.js">wordTree.js</a></h3>
+      <h3><a href="./static/js/generated.js">generated.js</a></h3>
+    </div>
+    <h2>
+      Description: 
+    </h2>
+    <h3>
+      WordSource is an interactive visualization tool that allows a user to gain insight into
+      text patterns found in a body of text.
+    </h3>
+    <h2>
+      Program Structure
+    </h2>
+    <h3>
+      This program processes an uploaded body of text using NLTK and sends it back to the JavaScript to be
+      drawn as visualizations using D3.js. Each token is parsed and stored in an object for visualization.
+      A tree is formed where each node's children are the tokens that come directly after it. From
+      here, we can visualize a tree of every token present within a body of text.
+    </h3>
+    
+    <h2>
+      Features
+    </h2>
+    <ul style="font-size: 20px;">
+      <li>File upload</li>
+      <li>Token Frequency Bar Chart</li>
+      <li>Concordance Generator</li>
+      <li>Word Tree Visualization</li>
+      <li>Text Generation</li>
+    </ul>
+    
+    <div style="width:1700px; height: 660px;display:block;">
+      <img src="./static/wordTree.png" width="650px" style="float:left;">
+      <img src="./static/python_freq.png" width="1000px" style="margin-left:20px; float:left;">
+      <img src="./static/bohemian_generated.png" width="1000px" style="margin-top:40px; margin-bottom:50px; margin-left:20px; float:left;">
+    </div>
+    
+    <hr>
+    
+    <div>
+      <h2>
+        Related Works:
+      </h2>
+      <h3><a href="https://www.jasondavies.com/wordtree/?source=obama.inauguration.2013.txt&prefix=We">WordTree - Concordance Visualization</a></h3>
+      <h3><a href="http://www.wordle.net/">Wordle - Token Frequency Visualization</a></h3>
+    </div>
+    
+    <div>
+      <h2>
+        References:
+      </h2>
+      <h3><a href="https://www.nltk.org/ ">NLTK - Natural Language Toolkit </a></h3>
+      <h3><a href="https://d3js.org/ ">D3.js - Javascript Visualization Library</a></h3>
+      <h3><a href="https://pypi.org/project/chardet/ ">Chardet - Text File encoding and decoding Python library</a></h3>
+      <h3><a href="http://www.web2py.com/">Web2Py - Full stack Python web application framework</a></h3>
+      <h3><a href="https://vuejs.org/ ">Vue.js - Frontend Javascript Framework</a></h3>
+    </div>
+    <p><a href=""></a></p>
+    <p>
+    </p>
+  </body>
+</html>
