@@ -3,11 +3,12 @@ function drawConcordance(list, count){
   
   const margin = 60;
   const width = 1500 - 2 * margin;
-  const height = 600 - 2 * margin;
+  const height = 580 - 2 * margin;
   const phrase_offset = 25;
 
   const svg = d3.select('svg')
-    .style('width', '1500px')
+    .style('width', width)
+    .style('height', height)
     .style('background-color', 'white');
     
   if (list.length == 0){

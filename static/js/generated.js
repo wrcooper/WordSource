@@ -20,6 +20,7 @@ function generateText(nodes, count){
 
 function addToken(string, token){
   if (!endings.includes(token)) string += space;
+  if (token == "i") token = "I";
   string += token;
   return string;
 }

@@ -62,8 +62,8 @@
             <button class="vis_attr_btn" v-on:click="set_visattr('len')"> Token Length Frequency </button>
             <br>
             <div style="margin-top:14px">
-            <button class="vis_attr_btn" id="toggle_exclusion_btn" v-on:click="toggle_exclusion()"> Add Exclusion </button>
-            <button class="vis_attr_btn" id="reset_exclusions_btn" v-on:click="reset_exclusions()"> Reset 0 Exclusions </button>
+              <button class="vis_attr_btn" id="toggle_exclusion_btn" v-on:click="toggle_exclusion()"> Add Exclusion </button>
+              <button class="vis_attr_btn" id="reset_exclusions_btn" v-on:click="reset_exclusions()"> Reset 0 Exclusions </button>
             </div>
           </div>
           
@@ -73,8 +73,9 @@
             <div>Displaying first <input class="to_display_input" v-model="to_display_conc" @change="get_concordance()" type="number" min="1" max="20" step="1"></div>
           </div>
           
-          <div v-if="vis_type == 'tree' && !loading" class="tree=_container">
-            
+          <div v-if="vis_type == 'tree' && !loading" class="tree_container">
+            Tree Depth: <input v-model="tree_depth" @change="changeTreeParams" type="number">
+            Max Children: <input v-model="child_count" @change="changeTreeParams" type="number">
           </div>
           
           <div v-if="vis_type == 'gen' && !loading" class="gen_container">

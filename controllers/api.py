@@ -132,7 +132,7 @@ def add_exclusion():
   )
 
 # Courtesy of https://simply-python.com/2014/03/14/saving-output-of-nltk-text-concordance/
-def get_all_phrases_containing_tar_wrd(target_word, tar_passage, left_margin = 10, right_margin = 10):
+def get_all_phrases_containing_tar_wrd(target_word, tar_passage, left_margin = 20, right_margin = 20):
     """
         Function to get all the phases that contain the target word in a text/passage tar_passage.
         Workaround to save the output given by nltk Concordance function
@@ -189,7 +189,4 @@ def get_concordance():
     dict(concordance = results)
   )
   
-
-def generate_text():
-  return
   

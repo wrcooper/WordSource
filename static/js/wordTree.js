@@ -1,10 +1,14 @@
 
-var width = 1600;
+var width = 1800;
 var height = 1600;
 
+var maxDepth = 3;
+var maxChildren = 8;
+var currentNodeIndex;
+  
 displayID = 0;
 
-cur_index = 0;
+var cur_index = 0;
 
 class DisplayNode{
   constructor(node, i){
@@ -15,10 +19,55 @@ class DisplayNode{
     if (i > 1) {
       for (var index in node.children){
         var child = new DisplayNode(node.children[index], j);
-        this.children.push(child);
+        
+        var thisNode = this;
+        var probNode = probabilityNodeArray.find(function(probNode){
+          return thisNode.name == probNode.token;
+        });
+        
+        if (probNode != undefined) {
+          var probability = calculatePercOccurance(probNode.tokens, child.name, probNode.count);
+          child.prob = probability;
+        }
+        
+        console.log(this.name + ": " + child.name + " - " + probability);
+        if(!Number.isNaN(child.name)) this.children.push(child);
       }
     }
   }
+}
+
+// sorts by probability and includes only first n
+function sortAndInclude(node, n){
+  node.children.sort(function(a, b) {return b.prob - a.prob});
+  var removed = node.children.splice(n, node.children.length - n);
+  
+  var max = 0;
+  for (var i in node.children){
+    if (node.children[i].prob > max) max = node.children[i].prob;
+  }
+  var color = d3.scaleLinear()
+      .domain([0, max])
+      .range(["rgb(243, 23, 45)", "rgb(124,252,0)"]);
+      
+  if (removed.length != 0) {
+    var moreNode = new Object;
+    moreNode.name = "<more>";
+    var more = new DisplayNode(moreNode, 0);
+    node.children.push(more);
+  }
+  for (var i in node.children){
+    if (node.children[i].children != undefined) sortAndInclude(node.children[i], n);
+    node.children[i].color = node.children[i].prob ? color(node.children[i].prob) : "#fff";
+  }
+}
+
+function calculatePercOccurance(tokens, token, total){
+  var count = 0;
+  for (var i = 0; i < tokens.length; i++){
+    if (tokens[i] == token) count++;
+  }
+  return ((count/total) * 100).toFixed(2);
 }
   
 function drawTree(nodes){
@@ -38,42 +87,15 @@ function drawTree(nodes){
   
 }
 
-// How do we handle loops?
-function getFirstLevels(root, n){
-  var tempArray = [];
-  getFirstLevelsRec(tempArray, root, n - 1);
-  return tempArray;
-}
-
-function getFirstLevelsRec(array, root, n){
-  for (i in root.children){
-  
-    if (n <= 0) {
-      root.children[i].active = false;
-      array.push(root.children[i]);
-    } else {
-      getFirstLevelsRec(array, root.children[i], n - 1);
-    }
-  }
-}
 
 function drawRoot(nodes, index){
   var svg = d3.select("svg");
   
   var tree = d3.tree()
-    .size([height - 100, width - 600]);
-    
-  var new_root = new DisplayNode(nodes[index], 3);
-  console.log(new_root);
-    
-  console.log(nodes);
-  console.log(index);
-  console.log(nodes[index]);
+    .size([height - 100, width - 700]);
   
-  var tempArray = getFirstLevels(nodes[index], 2);
-  console.log(tempArray);
-  
-  console.log(nodes);
+  var new_root = new DisplayNode(nodes[index], maxDepth);
+  sortAndInclude(new_root, maxChildren);
   
   var hierarch = d3.hierarchy(new_root, function(d){
     return ( d.children );
@@ -85,7 +107,7 @@ function drawRoot(nodes, index){
 
   tree(links);
     
-  var g = svg.append("g").attr("transform", "translate(300,0)");
+  var g = svg.append("g").attr("transform", "translate(400,50)");
   
   var link = g.selectAll(".link")
       .data(links.descendants().slice(1))
@@ -103,14 +125,36 @@ function drawRoot(nodes, index){
       .attr("r", 2.5);
 
   node.append("text")
-      .attr("dy", 3)
-      .attr("x", function(d) { return d.children ? -8 : 8; })
-      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
+      .attr("dy", function(d) { if (d.data.name == "<more>" && d.depth != maxDepth - 1) return 8; return d.children ? 4 : 3; })
+      .attr("x", function(d) { if (d.data.name == "<more>" && d.depth != maxDepth - 1) return -10; return d.children ? -10 : 10; })
+      .style("text-anchor", function(d) {if (d.data.name == "<more>" && d.depth != maxDepth - 1) return "end"; return d.children ? "end" : "start"; })
+      .style("text-shadow", "2px 2px #000")
+      .style("fill", function(d){return d.data.color ? d.data.color : "#fff"})
+      .attr('onmouseover', '')
+      .style('cursor', 'pointer')
       .text(function(d) { return d.data.name; })
       .style("font-size", function(d) {
-        if (d.depth == 0) return 72;
-        else if (d.depth == 1) return 36;
+        if (d.depth == 0) return 54;
+        else if (d.depth == 1) return 30;
         else if (d.depth == 2) return 24;
+        else return 16;
+      })
+      .on("click", function (s){
+        changed(s, nodes);
+      })
+      
+  node.append("text")
+      .attr("dy", function(d) { if (d.depth > 3) return d.children ? -8 : -5; return d.children ? -25 + ((d.depth - 1) * 8) : -5; })
+      .attr("x", function(d) { return d.children ? 0 : 0; })
+      .attr('onmouseover', '')
+      .style('cursor', 'pointer')
+      .style("text-anchor", function(d) { return d.children ? "end" : "end"; })
+      .style("text-shadow", "2px 2px #000")
+      .text(function(d) { return d.data.prob ? d.data.prob + "%" : ""; })
+      .style("font-size", function(d) {
+        if (d.depth == 0) return 36;
+        else if (d.depth == 1) return 24;
+        else if (d.depth == 2) return 16;
         else return 12;
       })
       .on("click", function (s){
@@ -118,11 +162,11 @@ function drawRoot(nodes, index){
       })
       
   function changed(s, nodes) {
+      if (s.data.name == "<more>") return;
       d3.selectAll("svg > *").remove();
       
       console.log(s);
       console.log(nodes);
-      
       
       var root = nodes.find(function(node){
         return node.name == s.data.name;
@@ -131,7 +175,7 @@ function drawRoot(nodes, index){
       console.log(root);
       
       var index = nodes.indexOf(root);
-      
+      cur_index = index;
       console.log(index);
      
       drawRoot(nodes, index);
@@ -139,21 +183,6 @@ function drawRoot(nodes, index){
       node.transition(t).attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
       link.transition(t).attr("d", diagonal);
     }
-}
-
-function setRoot(root){
-  var offset = root.depth;
-  root.depth = 0;
-  applyOffsetChildren(root, offset);
-}
-
-function applyOffsetChildren(root, offset){
-  for (var index in root.children){
-    var child = root.children[index];
-    child.depth -= offset;
-    if (child.children == null) continue;
-    applyOffsetChildren(child, offset);
-  }
 }
 
 function diagonal(d) {

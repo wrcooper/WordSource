@@ -48,6 +48,7 @@
 .vis_button{
 	margin: 5px 1%;
 	width:22.5%;
+  font-weight: bold;
 }
 
 .vis_container{
@@ -81,6 +82,7 @@ svg{
 }
 
 .conc_btn_container{
+  font-size: 20px;
   margin-bottom: 20px;
 }
 
@@ -89,10 +91,18 @@ svg{
   float:left;
 }
 
+.tree_container{
+  font-size: 20px;
+}
+
+.gen_container{
+  font-size: 20px;
+}
+
 #gen_text_container{
   color:black;
   padding:20px;
-  font-size:20px;
+  font-size:36px;
   margin-top:40px;
   width:100%;
   height:100%;

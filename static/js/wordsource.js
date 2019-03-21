@@ -178,6 +178,9 @@ var app = function() {
 				
         self.selected.concordance = [];
         wordTreeArray = [];
+        cur_index = 0;
+        self.selected.tree_depth = 3;
+        self.selected.child_count = 8;
         probabilityNodeArray = [];
         self.update_matches();
 				return;
@@ -297,7 +300,7 @@ var app = function() {
   
   // Draw Token Distribution
   self.draw_tokendist = function(){  
-    maxFreq = Math.max.apply(Math, self.selected.freq_array.map(function(o) { return o.freq; }))
+    maxFreq = Math.max.apply(Math, self.selected.final_freq_array.map(function(o) { return o.freq; }))
     
     var first = self.selected.final_freq_array.slice(0, self.selected.to_display)
     drawTokVis(first, maxFreq, self.selected.filename);
@@ -310,7 +313,7 @@ var app = function() {
     drawLenVis(first, maxFreq, self.selected.filename);
   }
   
-  // Drwa Word Tree
+  // Draw Word Tree
   self.draw_tree = function(){
     drawTree(self.selected.tree);
   }
@@ -406,7 +409,10 @@ var app = function() {
 	});
   
   self.select_vis = function(type){
+    
+    $("#gen_text_container").text("");
     self.selected.concordance = [];
+    cur_index = 0;
     self.update_matches();
     self.selected.vis_type = type;
     self.draw_vis()
@@ -431,6 +437,12 @@ var app = function() {
   self.set_visattr = function(attr){
     self.selected.visattr = attr;
     self.draw_freqdist();
+  }
+  
+  self.changeTreeParams = function(){
+    maxDepth = self.selected.tree_depth;
+    maxChildren = self.selected.child_count;
+    self.draw_tree();
   }
   
   // Selected Wordsource Vue
@@ -459,6 +471,9 @@ var app = function() {
       exclusions: [],
       gen_text_count: 100,
       loading: false,
+      child_count: 8,
+      tree_depth: 3,
+      current_root: 0
 		},
 		methods:{
 			process_wordsource: self.process_wordsource,
@@ -470,6 +485,7 @@ var app = function() {
       add_exclusion: self.add_exclusion,
       reset_exclusions: self.reset_exclusions,
       generate_text: self.generate_text,
+      changeTreeParams: self.changeTreeParams,
 		}
 		
 	});
