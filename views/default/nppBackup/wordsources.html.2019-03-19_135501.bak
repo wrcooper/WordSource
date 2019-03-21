@@ -1,0 +1,94 @@
+{{extend 'layout.html'}}
+
+{{block header}}
+  <script>
+    var select_wordsource_url = "{{=URL('api', 'select_wordsource')}}";
+    var process_wordsource_url = "{{=URL('api', 'process_wordsource')}}";
+    var get_wordsources_url = "{{=URL('api', 'get_wordsources')}}";
+    var delete_wordsource_url = "{{=URL('api', 'delete_wordsource')}}";
+    var get_user_url = "{{=URL('api', 'get_user')}}";
+    var generate_text_url = "{{=URL('api', 'generate_text')}}";
+    var get_concordance_url = "{{=URL('api', 'get_concordance')}}";
+    var add_exclusion_url = "{{=URL('api', 'add_exclusion')}}";
+  </script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="{{=URL('static', 'js/freqvis.js')}}"></script>
+  <script src="{{=URL('static', 'js/concordance.js')}}"></script>
+  <script src="{{=URL('static', 'js/wordTree.js')}}"></script>
+  <script src="{{=URL('static', 'js/generated.js')}}"></script>
+  <link rel="stylesheet" type="text/css" href="{{=URL('static', 'css/freqvis.css')}}"></link>
+  <link rel="stylesheet" type="text/css" href="{{=URL('static', 'css/wordTree.css')}}"></link>
+{{end}}
+
+<div>
+	{{if auth.user:}}
+		
+		<div id="available_wordsources" v-if="selected == -1">
+	
+			<div id="navbar">
+				<a href="{{=URL('default', 'index')}}"><button class="navbar_btn">Upload WordSource</button></a>
+				<a href="{{=URL('default', 'wordsources')}}"><button class="navbar_btn">My WordSources</button></a>
+			</div>
+		
+			<div v-if="wordsources.length == 0">
+				No WordSources! Upload one to see it here.
+			</div>
+		
+			<a v-cloak v-for="wordsource in wordsources">
+				<div class="wordsource_selector" v-on:click="select_wordsource(wordsource.id)">
+					<button onClick="window.location.reload()" style="float:right;" v-on:click="delete_wordsource(wordsource.id, wordsource.name)"> <i class="fas fa-times"></i> </button>
+					<h3> ${wordsource.name} </h3>
+					${wordsource.filetype}
+				</div>
+			</a>
+		</div>
+		
+		<div id="selected_wordsource">
+			<div v-cloak class="selected_wordsource" v-if="selected != -1">
+				<h1>${wordsource_name} <button style="float:right; margin:5px;" v-on:click="deselect_wordsource"> Back to WordSources </button></h1>
+				<div class="vis_selector">
+					<button class="vis_button" v-on:click="select_vis('freq')"> Word Frequency </button> 
+					<button class="vis_button" v-on:click="select_vis('conc')"> Concordance </button> 
+					<button class="vis_button" v-on:click="select_vis('tree')"> Word Tree </button> 
+					<button class="vis_button" v-on:click="select_vis('gen')"> Generated Text </button> 
+				</div> 
+				<div class="vis_container">
+          <div v-if="vis_type == 'freq'" class="freq_btn_container">
+            # to display: <input class="to_display_input" v-model="to_display" @change="draw_freqdist" type="number" min="1" max="100" step="1">
+            <button class="vis_attr_btn" v-on:click="set_visattr('token')"> Token Frequency </button>
+            <button class="vis_attr_btn" v-on:click="set_visattr('len')"> Token Length Frequency </button>
+            <br>
+            <div style="margin-top:14px">
+            <button class="vis_attr_btn" id="toggle_exclusion_btn" v-on:click="toggle_exclusion()"> Add Exclusion </button>
+            <button class="vis_attr_btn" id="reset_exclusions_btn" v-on:click="reset_exclusions()"> Reset 0 Exclusions </button>
+            </div>
+          </div>
+          
+          <div v-if="vis_type == 'conc'" class="conc_btn_container">
+            <div style="float:right; font-size:30px;">Matches found: <div style="display:inline">${matches_found}</div> </div>
+            Type in a word and press enter: <input type="text" v-model="query" @keyup.enter="get_concordance()">
+            <div>Displaying first <input class="to_display_input" v-model="to_display_conc" @change="get_concordance()" type="number" min="1" max="20" step="1"></div>
+          </div>
+          
+          <div v-if="vis_type == 'tree'" class="tree=_container">
+            
+          </div>
+          
+          <div v-if="vis_type == 'gen'" class="gen_container">
+            <div class="gen_btn_container">
+              <div style="display:inline-block;"> Generating text of size: <input type="number" v-model="gen_text_count"></input> </div> <button class="vis_attr_btn" v-on:click="generateText"> Generate! </button>
+            </div>
+            <div id="gen_text_container"> </div>
+          </div>
+          
+          <div class="svg_container">     
+            <svg />
+          </div>
+				</div>
+			</div>
+		</div>
+		
+	{{else:}}
+		<h1> Please log in to continue! <h1>
+	{{pass}}
+</div>

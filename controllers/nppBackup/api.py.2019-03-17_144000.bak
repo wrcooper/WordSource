@@ -1,0 +1,191 @@
+import os, logging
+import pdfminer, io
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
+from pdfminer.pdfpage import PDFPage
+
+import nltk
+from nltk.book import *
+
+from chardet.universaldetector import UniversalDetector
+
+logger = logging.getLogger("web2py.app.myapp")
+logger.setLevel(logging.DEBUG)
+
+exclusions = []
+
+def convert_pdf_to_txt(stream):
+  rsrcmgr = PDFResourceManager()
+  retstr = io.StringIO()
+  codec = 'utf-8'
+  laparams = LAParams()
+  device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
+  # fp = open(path, 'rb')
+  interpreter = PDFPageInterpreter(rsrcmgr, device)
+  password = ""
+  maxpages = 0
+  caching = True
+  pagenos = set()
+
+  for page in PDFPage.get_pages(stream, pagenos, maxpages=maxpages,
+                                password=password,
+                                caching=caching,
+                                check_extractable=True):
+      interpreter.process_page(page)
+
+  text = retstr.getvalue()
+
+  stream.close()
+  device.close()
+  retstr.close()
+  return text
+
+def get_user():
+  if auth is not None:
+    return response.json(
+      dict(user_id = auth.user_id)
+    )
+  else:
+    return response.json(
+      dict(user_id = -1)
+    )
+
+def get_wordsources():
+  wordsources = db(db.wordsources.source_owner == request.vars.user_id).select()
+  return response.json(
+  dict(wordsources = wordsources)
+  )
+  
+def delete_wordsource():
+  db(db.wordsources.id == request.vars.wordsource_id).delete()
+  return
+
+def select_wordsource():
+  wordsource = db(db.wordsources.id == request.vars.wordsource_id).select() 
+  return response.json(
+    dict(wordsource = wordsource)
+  )
+  
+def process_text(text, filename):
+    #logger.debug(text)
+    tokens = nltk.word_tokenize(text)
+    freq_dist = FreqDist(tokens)
+    len_dist = FreqDist(len(w) for w in tokens)
+    outcomes = freq_dist.N()
+    #logger.debug(freq_dist)
+    
+    return response.json(
+      dict(
+        tokens = tokens,
+        freq_dist = freq_dist,
+        len_dist = len_dist,
+        outcomes = outcomes,
+        filename = filename
+      )
+    )
+
+# Get frequency distributions for a given wordsource
+def process_wordsource():
+  wordsource = db(db.wordsources.id == request.vars.wordsource_id).select().first()
+  (filename, stream) = db.wordsources.origin.retrieve(wordsource.origin)
+  name, file_extension = os.path.splitext(filename)
+  if (file_extension == ".pdf"):
+    text = convert_pdf_to_txt(stream)
+    return process_text(text, filename)
+  elif (file_extension == ".txt"):
+    textarr = stream.readlines()
+    
+    detector = UniversalDetector()
+    for line in textarr:
+      detector.feed(line)
+      if detector.done: break
+    detector.close()
+    
+    lines = []
+    for line in textarr:
+      lines.append(line.decode(detector.result['encoding']))
+    
+    text = ''.join(lines)
+    
+    # logger.debug(text)
+    return process_text(text, filename)
+  return
+  
+def add_exclusion():
+  token = request.vars.token
+  exclusions.append(token)
+  new_array = filter_exclusions(request.vars.freq_array)
+  return response.json(
+    dict(
+      freq_array = new_array
+    )
+  )
+
+# Filters a frequency list for exclusions and returns the result
+def filter_exclusions(freq_array):
+  new_array = [obj for obj in freq_array if obj.token not in exclusions]
+  return new_array
+
+# Courtesy of https://simply-python.com/2014/03/14/saving-output-of-nltk-text-concordance/
+def get_all_phrases_containing_tar_wrd(target_word, tar_passage, left_margin = 10, right_margin = 10):
+    """
+        Function to get all the phases that contain the target word in a text/passage tar_passage.
+        Workaround to save the output given by nltk Concordance function
+         
+        str target_word, str tar_passage int left_margin int right_margin --> list of str
+        left_margin and right_margin allocate the number of words/pununciation before and after target word
+        Left margin will take note of the beginning of the text
+    """
+     
+    ## Create list of tokens using nltk function
+    tokens = nltk.word_tokenize(tar_passage)
+     
+    ## Create the text of tokens
+    text = nltk.Text(tokens)
+ 
+    ## Collect all the index or offset position of the target word
+    c = nltk.ConcordanceIndex(text.tokens, key = lambda s: s.lower())
+ 
+    ## Collect the range of the words that is within the target word by using text.tokens[start;end].
+    ## The map function is use so that when the offset position - the target range < 0, it will be default to zero
+    concordance_txt = ([text.tokens[list(map(lambda x: x-5 if (x-left_margin)>0 else 0,[offset]))[0]:offset+right_margin]
+                        for offset in c.offsets(target_word)])
+                         
+    ## join the sentences for each of the target phrase and return it
+    return [''.join([x+' ' for x in con_sub]) for con_sub in concordance_txt]
+    
+
+def get_concordance():
+  wordsource = db(db.wordsources.id == request.vars.wordsource_id).select().first()
+  (filename, stream) = db.wordsources.origin.retrieve(wordsource.origin)
+  name, file_extension = os.path.splitext(filename)
+  
+  if (file_extension == ".pdf"):
+    text = convert_pdf_to_txt(stream)
+  elif (file_extension == ".txt"):
+    textarr = stream.readlines()
+    
+    detector = UniversalDetector()
+    for line in textarr:
+      detector.feed(line)
+      if detector.done: break
+    detector.close()
+    
+    lines = []
+    for line in textarr:
+      lines.append(line.decode(detector.result['encoding']))
+    
+    text = ''.join(lines)
+  
+  query = request.vars.query
+  results = get_all_phrases_containing_tar_wrd(query, text)
+  
+  return response.json(
+    dict(concordance = results)
+  )
+  
+
+def generate_text():
+  return
+  

@@ -1,0 +1,96 @@
+.upload_container{
+	border: 2px solid black;
+	border-radius:2px;
+	padding:20px;
+	margin-bottom: 20px;
+  color:black;
+}
+
+.wordsource_selector{
+	float:left;
+	width:48%;
+	margin-right: 1%;
+	margin-left: 1%;
+	box-shadow: 0 0 10px 0px #000;
+	border: 2px solid grey;
+	background-color: black;
+	color:white;
+	padding: 10px;
+	margin-top:10px;
+	margin-bottom:10px;
+	cursor:pointer;
+}
+
+#navbar{
+	background-color:black;
+	padding: 10px;
+	border: 2px solid grey;
+	border-radius: 2px;
+	margin-bottom: 40px;
+}
+
+.navbar_btn{
+	margin:5px;
+}
+
+.selected_wordsource{
+	color:white;
+	background-color:black;
+	padding: 20px;
+}
+
+.vis_selector{
+	margin-top:20px;
+	border: 2px solid white;
+	padding: 5px 0;
+}
+
+.vis_button{
+	margin: 5px 1%;
+	width:22.5%;
+}
+
+.vis_container{
+  overflow:auto;
+  margin-top: 20px;
+	padding:20px;
+  background-color: #2F4A6D;
+}
+
+.svg_container{
+  width: 100%;
+  height:100%;
+  text-align:center;
+}
+
+.freq_btn_container{
+  margin-top: -12px;
+  right: 50px;
+  position: absolute;
+}
+
+.vis_attr_btn{
+  margin-left: 10px;
+  float:right;
+  width:200px;
+}
+
+svg{
+	width: 2000px;
+	height: 600px;
+}
+
+.conc_btn_container{
+  margin-bottom: 20px;
+}
+
+#gen_test_container{
+  width:90%;
+  height:90%;
+  background-color:white;
+}
+
+.to_display_input{
+  height: 30px;
+  text-align: center;
+}

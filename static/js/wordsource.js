@@ -1,3 +1,4 @@
+// Token Distribution class
 class FreqDistNode {
   constructor(token, count, freq){
     this.token = token;
@@ -6,6 +7,7 @@ class FreqDistNode {
   }
 }
 
+// Token Length Distribution class
 class LenDistNode {
   constructor(len, count, freq){
     this.len = len;
@@ -14,11 +16,107 @@ class LenDistNode {
   }
 }
 
+var probabilityNodeArray = [];
+
+class ProbabilityNode {
+  constructor(token){
+    this.token = token;
+    this.count = 0;
+    this.tokens = [];
+    probabilityNodeArray.push(this);
+  }
+  
+  addProbabilityNode(token) {
+    // If node for the next token doesn't exist, create it
+    var next_node = probabilityNodeArray.find(function(node){
+      return node.token == token;
+    });
+    
+    if (next_node == undefined) next_node = new ProbabilityNode(token);
+    
+    // If this node doesn't have a entry for the next node, create it
+    this.tokens.push(token);
+    
+    this.count++;
+    
+    return next_node;
+    
+  }
+  
+  generateNext(){
+    var i = Math.floor(Math.random() * this.count);
+    var currentNode = this;
+    var nextNode = probabilityNodeArray.find(function(node){
+      return node.token == (currentNode.tokens[i]);
+    })
+    return nextNode;
+  }
+}
+
+var wordTreeArray = [];
+
+class WordTreeNode {
+  constructor(token){
+    this.name = token;
+    this.children = [];
+    this.parents = [];
+    this.active = true;
+  }
+  
+  addChild(token){
+    // check if child is in the array
+    var child = wordTreeArray.find(function(node){
+      return node.name == token;
+    });
+    
+    if (child == undefined){
+      // if not in list, then add new child
+      child = new WordTreeNode(token);
+      wordTreeArray.push(child);
+      this.children.push(child);
+      child.parents.push(this)
+      this[child.name] = 1;
+      
+    }else{
+      // if in list, update probability
+      this[child.name] == undefined ? this[child.name] = 1 :this[child.name]++;
+      
+      var already_child = undefined;
+      if (this.children.length != 0){
+        already_child = this.children.find(function(node){
+          return node.name == child.name;
+        })
+      }
+      
+      if (already_child == undefined){
+        this.children.push(child);
+      }
+      
+      var already_parent = undefined;
+      if (child.parents.length != 0){
+        var par_token = this.name;
+        already_parent = child.parents.find(function(node){
+          return node.name == par_token;
+        })
+      }
+      
+      if (already_parent == undefined){
+        child.parents.push(this);
+      }
+      
+    }
+    
+    return child;
+  }
+}
+
+// Main app
 var app = function() {
 	self.available = {};
 	
   Vue.config.silent = false; // show all warnings
 	
+  // Get user_id
 	self.get_user = function(){
 		console.log("getting user")
 		$.getJSON(get_user_url,
@@ -32,6 +130,7 @@ var app = function() {
 		);
 	}
 	
+  // Get wordsources
 	self.get_wordsources = function(user_id){
 		console.log("getting wordsources...");
 		
@@ -46,6 +145,7 @@ var app = function() {
 		);
 	}
 	
+  // Delete Wordsource
 	self.delete_wordsource = function(wordsource_id, wordsource_name){
 		if (confirm("Really delete " + wordsource_name + "?")){
 			$.post(delete_wordsource_url,
@@ -59,6 +159,7 @@ var app = function() {
 		}
 	}
 	
+  // Select Wordsource
 	self.select_wordsource = function(wordsource_id){
 		$.post(select_wordsource_url,
 			{
@@ -76,37 +177,69 @@ var app = function() {
 				self.process_wordsource(wordsource.id);
 				
         self.selected.concordance = [];
+        wordTreeArray = [];
+        probabilityNodeArray = [];
         self.update_matches();
 				return;
 			}
 		)
 	}
 	
+  // Deselect Wordsource
 	self.deselect_wordsource = function(){
 		self.available.selected = -1;
 		self.selected.selected = -1;
 	}
 	
+  // Process Wordsource
 	self.process_wordsource = function(wordsource_id){
+    self.selected.loading = true;
 		$.post(process_wordsource_url,
 			{
 				wordsource_id: wordsource_id
 			},
 			function(data){
         self.selected.tokens = data.tokens;
+        
+        self.compileWordTree(data.tokens);
+        
+        console.log(probabilityNodeArray);
+        
         self.selected.freq_dist = data.freq_dist;
         self.selected.len_dist = data.len_dist;
         self.selected.outcomes = data.outcomes;
         self.selected.filename = data.filename;
         
         self.selected.freq_array = formFreqArray(self.selected.freq_dist, self.selected.outcomes);
+        self.selected.final_freq_array = self.selected.freq_array;
         self.selected.len_array = formLenArray(self.selected.len_dist, self.selected.outcomes);
+        
+        self.selected.loading = false;
+        
         self.draw_vis();
 				return;
 			}
 		)
 	}
   
+  // Form the word tree with the provided tokens
+  self.compileWordTree = function (tokens){
+    var root_tok = tokens[0];
+    var curNode = new WordTreeNode(root_tok);
+    var curProbNode = new ProbabilityNode(tokens[0]);
+    wordTreeArray.push(curNode);
+    
+    for (var i = 1; i < tokens.length; i++){
+      token = tokens[i];
+      curNode = curNode.addChild(token);
+      curProbNode = curProbNode.addProbabilityNode(token);
+    }
+    
+    self.selected.tree = wordTreeArray;
+  }
+  
+  
+  // Draw a frequency distribution
   self.draw_freqdist = function(){
     if (self.selected.visattr == 'token'){
       self.draw_tokendist();
@@ -115,22 +248,78 @@ var app = function() {
     }
   }
   
+  // Toggle exclusion adding
+  self.toggle_exclusion_mode = function(){
+     self.selected.exclusion_mode = !self.selected.exclusion_mode;
+     console.log(self.selected.exclusion_mode);
+     if (self.selected.exclusion_mode){
+       $("#toggle_exclusion_btn").text("Click Bar to Add Exclusion");
+       $("#toggle_exclusion_btn").css("background-color","green");
+     }else{
+       $("#toggle_exclusion_btn").text("Add Exclusion");
+       $("#toggle_exclusion_btn").css("background-color","white");
+     }
+  }
+  
+  self.reset_exclusions = function(){
+    self.selected.exclusions = [];
+    self.filter_exclusions();
+    self.update_exclusions();
+    // Redraw distribution
+    self.draw_freqdist();
+  }
+  
+  // Adds exclusion, then draws new distribution
+  self.add_exclusion = function(token){
+    // Add exclusion
+    self.selected.exclusions.push(token);
+    // Update exclusion count
+    self.update_exclusions();
+    // Filter for exclusions
+    self.filter_exclusions();
+    // Redraw distribution
+    self.draw_freqdist();
+  }
+  
+  self.update_exclusions = function(){
+    if (self.selected.exclusions.length == 1){
+      var label = "Reset 1 Exclusion";
+    }else{
+      var label = "Reset " + self.selected.exclusions.length + " Exclusions";
+    }
+    $("#reset_exclusions_btn").text(label);
+  }
+  
+  self.filter_exclusions = function(){
+    var new_array = self.selected.freq_array.filter(freqNode => !self.selected.exclusions.includes(freqNode.token));
+    self.selected.final_freq_array = new_array;
+  }
+  
+  // Draw Token Distribution
   self.draw_tokendist = function(){  
     maxFreq = Math.max.apply(Math, self.selected.freq_array.map(function(o) { return o.freq; }))
     
-    first = self.selected.freq_array.slice(0, self.selected.to_display)
+    var first = self.selected.final_freq_array.slice(0, self.selected.to_display)
     drawTokVis(first, maxFreq, self.selected.filename);
   }
   
+  // Draw Length Distribution
   self.draw_lendist = function(){
     maxFreq = Math.max.apply(Math, self.selected.len_array.map(function(o) { return o.freq; }));
-    first = self.selected.len_array.slice(0, self.selected.to_display)
+    var first = self.selected.len_array.slice(0, self.selected.to_display)
     drawLenVis(first, maxFreq, self.selected.filename);
   }
   
+  // Drwa Word Tree
+  self.draw_tree = function(){
+    drawTree(self.selected.tree);
+  }
+  
+  // Concodance Functions
   self.draw_concordance = function(){
     drawConcordance(self.selected.concordance, self.selected.to_display_conc);
   } 
+  
   
   self.get_concordance = function(){
     console.log("Getting concordance...");
@@ -148,21 +337,18 @@ var app = function() {
       })
   }
   
+  // Generate Text Functions
   self.generate_text = function(){
-    $.post(generate_text_url,
-      {
-        tokens: self.selected.tokens
-      },
-      function(data){
-        console.log(data.generated);
-      }
-    )
+    var generatedText = generateText(probabilityNodeArray, self.selected.gen_text_count);
+    console.log(generatedText);
+    $("#gen_text_container").text(generatedText);
   }
   
   self.draw_generated = function(){
     self.generate_text();
   }
   
+  // Compile Frequency Arrays
   function formFreqArray(freq_dist, n){
     var freqArray = [];
     for (var token in freq_dist){
@@ -185,6 +371,7 @@ var app = function() {
     return lenArray;
   }
   
+  // Frequency comparison operations
   function compareFreqNodes(a, b){
     if (a.count > b.count){
       return -1;
@@ -200,6 +387,7 @@ var app = function() {
     return percentage;
   }
 	
+  // Available Wordsources Vue
 	self.available = new Vue({
 		el: "#available_wordsources",
 		delimiters: ['${', '}'],
@@ -231,6 +419,8 @@ var app = function() {
       self.draw_generated();
     }else if (self.selected.vis_type == 'conc'){
       self.draw_concordance();
+    }else if (self.selected.vis_type == 'tree'){
+      self.draw_tree();
     }
   }
   
@@ -243,6 +433,7 @@ var app = function() {
     self.draw_freqdist();
   }
   
+  // Selected Wordsource Vue
 	self.selected = new Vue({
 		el: "#selected_wordsource",
 		delimiters: ['${', '}'],
@@ -263,7 +454,11 @@ var app = function() {
       query: '',
       concordance: [],
       to_display_conc: 10,
-      matches_found: 0
+      matches_found: 0,
+      exclusion_mode: false,
+      exclusions: [],
+      gen_text_count: 100,
+      loading: false,
 		},
 		methods:{
 			process_wordsource: self.process_wordsource,
@@ -271,6 +466,10 @@ var app = function() {
       set_visattr: self.set_visattr,
       draw_freqdist: self.draw_freqdist,
       get_concordance: self.get_concordance,
+      toggle_exclusion: self.toggle_exclusion_mode,
+      add_exclusion: self.add_exclusion,
+      reset_exclusions: self.reset_exclusions,
+      generate_text: self.generate_text,
 		}
 		
 	});

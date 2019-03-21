@@ -49,6 +49,11 @@ function drawTokVis(freq_dist, max, filename){
     .on('mouseleave', function(){
       d3.select(this).style('opacity', 1);
     })
+    .on("click", function(s){
+      if (APP.selected.exclusion_mode == true){
+        add_exclusion(s.token);
+      }
+    })
     .append('text')
       .attr('class', 'value')
       .attr('x', (s) => xScale(s.token) + xScale.bandwidth() / 2)
@@ -72,9 +77,9 @@ function drawTokVis(freq_dist, max, filename){
     .text('Token Frequency in Text (%)')
 
   svg.append('text')
-    .attr('x', margin + 100)
+    .attr('x', margin)
     .attr('y', 30)
-    .attr('text-anchor', 'middle')
+    .attr('text-anchor', 'left')
     .style('font-size', '20px')
     .text("Token Frequency of \"" + filename + "\"")
     
@@ -121,7 +126,7 @@ function drawLenVis(freq_dist, max, filename){
     .attr('x', (s) => xScale(s.len))
     .attr('y', (s) => yScale(s.freq))
     .attr('height', (s) => height - yScale(s.freq))
-    .attr('width', xScale.bandwidth())
+    .attr('width', xScale.bandwidth());
 
   chart.append('g')
     .attr('class', 'grid')

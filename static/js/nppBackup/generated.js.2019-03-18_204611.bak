@@ -1,0 +1,9 @@
+function generateText(nodes){
+  var generatedText = "";
+  var space = " ";
+  // Choose a starting node
+  
+  // Randomly choose the next node based on probability
+  
+  // Repeat until target word count reached
+}

@@ -1,0 +1,45 @@
+var space = " ";
+var endings = [".", ",", "'", ";"];
+
+function generateText(nodes, count){
+  removeSVG();
+  
+  const margin = 60;
+  const width = 1500 - 2 * margin;
+  const height = 600 - 2 * margin;
+  const phrase_offset = 25;
+
+  const svg = d3.select('svg')
+    .style('width', '1500px')
+    .style('background-color', 'white');
+    
+  for (var i = 0; i < list.length; i++){
+    if (i == count) break;
+    svg.append('text')
+      .attr('x', width/2 + margin)
+      .attr('y', 30 + i * phrase_offset)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '20px')
+      .style('fill', 'black')
+      .text(list[i])
+  }
+  
+  var generatedText = "";
+  // Choose a starting node
+  var node = nodes[0];
+  generatedText += node.token;
+  for (var i = 0; i < count; i++){
+    // Randomly choose the next node based on probability
+    node = node.generateNext();
+    generatedText = addToken(generatedText, node.token);
+    // Repeat until target word count reached
+  }
+  
+  return generatedText;
+}
+
+function addToken(string, token){
+  if (!endings.includes(token)) string += space;
+  string += token;
+  return string;
+}

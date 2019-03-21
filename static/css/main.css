@@ -64,12 +64,15 @@
 }
 
 .freq_btn_container{
+  margin-top: -12px;
   right: 50px;
   position: absolute;
 }
 
 .vis_attr_btn{
   margin-left: 10px;
+  float:right;
+  width:200px;
 }
 
 svg{
@@ -79,6 +82,21 @@ svg{
 
 .conc_btn_container{
   margin-bottom: 20px;
+}
+
+#loading{
+  font-size:50px;
+  float:left;
+}
+
+#gen_text_container{
+  color:black;
+  padding:20px;
+  font-size:20px;
+  margin-top:40px;
+  width:100%;
+  height:100%;
+  background-color:white;
 }
 
 .to_display_input{

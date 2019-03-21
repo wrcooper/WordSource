@@ -1,0 +1,15 @@
+var space = " ";
+
+function generateText(nodes){
+  var generatedText = "";
+  // Choose a starting node
+  
+  // Randomly choose the next node based on probability
+  
+  // Repeat until target word count reached
+}
+
+function addToken(string, token){
+  string += space;
+  string += token;
+}

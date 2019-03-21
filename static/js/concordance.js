@@ -1,4 +1,3 @@
-
 function drawConcordance(list, count){
   removeSVG();
   

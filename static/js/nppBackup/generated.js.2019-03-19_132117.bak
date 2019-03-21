@@ -1,0 +1,22 @@
+var space = " ";
+
+function generateText(nodes, count){
+  var generatedText = "";
+  // Choose a starting node
+  var node = nodes[0];
+  for (var i = 0; i < count; i++){
+    // Randomly choose the next node based on probability
+    console.log(node.token);
+    node = node.generateNext();
+    generatedText = addToken(generatedText, node.token);
+    // Repeat until target word count reached
+  }
+  
+  return generatedText;
+}
+
+function addToken(string, token){
+  string += space;
+  string += token;
+  return string;
+}

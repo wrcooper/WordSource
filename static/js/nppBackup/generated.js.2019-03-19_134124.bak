@@ -1,0 +1,26 @@
+var space = " ";
+var endings = [".", ",", "'", ";"];
+
+function generateText(nodes, count){
+  removeSVG();
+  
+  var generatedText = "";
+  // Choose a starting node
+  var node = nodes[0];
+  generatedText += node.token;
+  for (var i = 0; i < count; i++){
+    // Randomly choose the next node based on probability
+    node = node.generateNext();
+    generatedText = addToken(generatedText, node.token);
+    // Repeat until target word count reached
+  }
+  
+  $("#gen_text_container").text = generatedText;
+  return generatedText;
+}
+
+function addToken(string, token){
+  if (!endings.includes(token)) string += space;
+  string += token;
+  return string;
+}
